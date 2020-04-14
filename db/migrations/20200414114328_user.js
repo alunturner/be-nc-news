@@ -1,6 +1,6 @@
 exports.up = function (knex) {
-  console.log("creating user schema...");
-  return knex.schema.createTable("user", (table) => {
+  console.log("creating users schema...");
+  return knex.schema.createTable("users", (table) => {
     table.string("username").primary().notNullable();
     table.string("avatar_url");
     table.string("name");
@@ -8,6 +8,6 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-  console.log("removing user schema...");
-  return knex.schema.dropTable("user");
+  console.log("removing users schema...");
+  return knex.schema.dropTable("users");
 };

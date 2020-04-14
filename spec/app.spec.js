@@ -17,7 +17,6 @@ describe("APP", () => {
         expect(body.msg).to.equal("path not found");
       });
   });
-  it("500 internal server error check", () => {});
   describe("/api", () => {
     describe("/topics", () => {
       describe("GET", () => {

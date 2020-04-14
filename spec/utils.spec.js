@@ -74,6 +74,43 @@ describe("formatDates", () => {
   });
 });
 
-describe("makeRefObj", () => {});
+describe("makeRefObj", () => {
+  it("returns an object", () => {
+    expect(makeRefObj([])).to.be.an("object");
+  });
+  it("returned object has string keys and number values", () => {
+    const input = [{ article_id: 1, title: "A" }];
+    const actual = makeRefObj(input);
+    for (let key in actual) {
+      expect(key).to.be.a("string");
+      expect(actual[key]).to.be.a("number");
+    }
+  });
+  it("returned object has correct keys: values for a single object input array", () => {
+    const input = [{ article_id: 1, title: "A" }];
+    const actual = makeRefObj(input);
+    expect(actual).to.deep.equal({ A: 1 });
+  });
+  it("returned object has correct keys: values for a multi object input array", () => {
+    const input = [
+      { article_id: 1, title: "A" },
+      { article_id: 3, title: "B" },
+      { article_id: 2, title: "FZ" },
+    ];
+    const actual = makeRefObj(input);
+    expect(actual).to.deep.equal({ A: 1, B: 3, FZ: 2 });
+  });
+  it("does not mutate input", () => {
+    const input = [
+      { article_id: 1, title: "A" },
+      { article_id: 3, title: "B" },
+      { article_id: 2, title: "FZ" },
+    ];
+    const control = [...input];
+    control.forEach((controlObj, index) => {
+      expect(controlObj).to.deep.equal(input[index]);
+    });
+  });
+});
 
 describe("formatComments", () => {});

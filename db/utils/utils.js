@@ -12,4 +12,15 @@ exports.makeRefObj = (list) => {
   return referenceObject;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, lookup) => {
+  return comments.map(
+    ({ created_by, belongs_to, created_at, ...otherKeys }) => {
+      return {
+        author: created_by,
+        article_id: lookup[belongs_to],
+        created_at: new Date(created_at),
+        ...otherKeys,
+      };
+    }
+  );
+};

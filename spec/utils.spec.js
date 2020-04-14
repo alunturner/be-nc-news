@@ -113,4 +113,113 @@ describe("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("returns an array", () => {
+    expect(formatComments([], {})).to.be.an("array");
+  });
+  it("returns a new array", () => {
+    const input = [];
+    expect(formatComments(input, {})).to.not.equal(input);
+  });
+  it("renames created_by key to author for a single object", () => {
+    const inputComments = [{ created_by: "me" }];
+    const actual = formatComments(inputComments, {});
+    expect(Object.keys(actual[0])).to.include("author");
+  });
+  it("renames created_by key to author for multiple objects", () => {
+    const inputComments = [
+      { created_by: "me" },
+      { created_by: "you" },
+      { created_by: "us" },
+    ];
+    const actual = formatComments(inputComments, {});
+    actual.forEach((object, index) => {
+      expect(Object.keys(object)).to.include("author");
+      expect(object.author).to.equal(inputComments[index].created_by);
+    });
+  });
+  it("renames belongs_to key to article_id for a single object", () => {
+    const inputComments = [{ belongs_to: "me" }];
+    const actual = formatComments(inputComments, {});
+    expect(Object.keys(actual[0])).to.include("article_id");
+  });
+  it("renames belongs_to key to article_id for multiple objects", () => {
+    const inputComments = [
+      { belongs_to: "me" },
+      { belongs_to: "you" },
+      { belongs_to: "us" },
+    ];
+    const actual = formatComments(inputComments, {});
+    actual.forEach((object, index) => {
+      expect(Object.keys(object)).to.include("article_id");
+    });
+  });
+  it("assigns correct value to the article_id, according to the lookup object", () => {
+    const inputComments = [
+      { created_by: "me", belongs_to: "me" },
+      { created_by: "you", belongs_to: "you" },
+      { created_by: "us", belongs_to: "us" },
+    ];
+    const inputLookup = { me: 1, you: 2, us: 3 };
+    const actual = formatComments(inputComments, inputLookup);
+    const expected = [
+      { author: "me", article_id: 1 },
+      { author: "you", article_id: 2 },
+      { author: "us", article_id: 3 },
+    ];
+    actual.forEach((object, index) => {
+      expect(object).to.include(expected[index]);
+    });
+  });
+  it("created_at value is a Date object", () => {
+    const inputComments = [
+      { created_at: 0 },
+      { created_at: 1000 },
+      { created_at: 20000 },
+    ];
+    actual = formatComments(inputComments, {});
+    actual.forEach((object) => {
+      expect(object.created_at).to.be.an.instanceOf(Date);
+    });
+  });
+  it("maintains the remaining properties", () => {
+    const inputComments = [
+      {
+        body: "Oh",
+        belongs_to: "They",
+        created_by: "be",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+    ];
+    const inputLookup = { They: 99 };
+    const expected = [
+      {
+        body: "Oh",
+        article_id: 99,
+        author: "be",
+        votes: 16,
+        created_at: new Date(1511354163389),
+      },
+    ];
+    const actual = formatComments(inputComments, inputLookup);
+    expect(actual).to.deep.equal(expected);
+  });
+  it("does not mutate the input", () => {
+    const inputComments = [
+      {
+        body: "Oh",
+        belongs_to: "They",
+        created_by: "be",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+    ];
+    const inputLookup = { They: 99 };
+    const controlComments = [...inputComments];
+    const controlLookup = { ...inputLookup };
+    formatComments(inputComments, inputLookup);
+    expect(controlComments).to.deep.equal(inputComments);
+    expect(controlLookup).to.deep.equal(inputLookup);
+  });
+});

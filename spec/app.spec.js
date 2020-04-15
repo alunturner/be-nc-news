@@ -62,5 +62,51 @@ describe("APP", () => {
         });
       });
     });
+    describe("/users", () => {
+      describe("/:username", () => {
+        describe("GET", () => {
+          it("200: responds with object, key of user, value a single object with keys username, avatar_url and name", () => {
+            return request(app)
+              .get("/api/users/butter_bridge")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("user");
+                expect(body.user).to.be.an("object");
+                expect(Object.entries(body.user)).to.have.length(3);
+                expect(body.user).to.have.all.keys(
+                  "username",
+                  "avatar_url",
+                  "name"
+                );
+              });
+          });
+          // should this be a 400 series status?
+          it("200: responds as above but with an empty user object if user does not exist", () => {
+            return request(app)
+              .get("/api/users/missing_user")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("user");
+                expect(body.user).to.be.an("object");
+                expect(Object.entries(body.user)).to.have.length(0);
+              });
+          });
+        });
+        describe("INVALID METHODS", () => {
+          it("405: msg invalid method if invalid method used", () => {
+            const invalidMethods = ["post", "put", "patch", "delete"];
+            const requests = invalidMethods.map((method) => {
+              return request(app)
+                [method]("/api/users/icellusedkars")
+                .expect(405)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("invalid method");
+                });
+            });
+            return Promise.all(requests);
+          });
+        });
+      });
+    });
   });
 });

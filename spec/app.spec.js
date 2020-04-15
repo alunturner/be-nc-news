@@ -4,6 +4,11 @@ const request = require("supertest");
 const app = require("../app");
 const knex = require("../db");
 
+beforeEach(() => {
+  console.log(`reseeding: ${process.env.NODE_ENV}`);
+  return knex.seed.run();
+});
+
 after(() => {
   return knex.destroy();
 });

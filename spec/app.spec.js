@@ -15,12 +15,12 @@ after(() => {
 });
 
 describe("APP", () => {
-  it("404: path not found if invalid path", () => {
+  it("404: msg invalid path if the path is not found", () => {
     return request(app)
       .get("/not_a_path")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).to.equal("path not found");
+        expect(body.msg).to.equal("invalid path");
       });
   });
   describe("/api", () => {
@@ -48,7 +48,18 @@ describe("APP", () => {
         });
       });
       describe("INVALID METHODS", () => {
-        const methods = ["POST", "PUT", "PATCH", "DELETE"];
+        it("405: msg invalid method if invalid method used", () => {
+          const invalidMethods = ["post", "put", "patch", "delete"];
+          const requests = invalidMethods.map((method) => {
+            return request(app)
+              [method]("/api/topics")
+              .expect(405)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("invalid method");
+              });
+          });
+          return Promise.all(requests);
+        });
       });
     });
   });

@@ -21,3 +21,13 @@ exports.selectArticleById = ({ article_id }) => {
       return dbResponse;
     });
 };
+
+exports.updateArticleById = ({ article_id }, { inc_votes: votes }) => {
+  if (votes === undefined) {
+    return Promise.reject({ status: 400, msg: "invalid object" });
+  }
+  return knex("articles")
+    .where({ article_id })
+    .increment({ votes })
+    .returning("*");
+};

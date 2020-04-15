@@ -10,7 +10,7 @@ exports.invalidMethodController = (req, res, next) => {
 exports.handle400s = (err, req, res, next) => {
   const codes = {
     //first hit by /articles/:article_id, parameter not a number
-    "22P02": { status: 400, msg: "invalid parameter" },
+    "22P02": { status: 400, msg: "invalid value type" },
   };
   if (err.code in codes) {
     const { status, msg } = codes[err.code];

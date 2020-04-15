@@ -1,11 +1,12 @@
 process.env.NODE_ENV = "test";
-const { expect } = require("chai");
+const chai = require("chai");
+const { expect } = chai;
+chai.use(require("chai-sorted"));
 const request = require("supertest");
 const app = require("../app");
 const knex = require("../db");
 
 beforeEach(() => {
-  console.log(`reseeding: ${process.env.NODE_ENV}`);
   return knex.seed.run();
 });
 
@@ -37,6 +38,17 @@ describe("APP", () => {
               });
             });
         });
+        it("200: default sort order of topics is slug ascending", () => {
+          return request(app)
+            .get("/api/topics")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.topics).to.be.ascendingBy("slug");
+            });
+        });
+      });
+      describe("INVALID METHODS", () => {
+        const methods = ["POST", "PUT", "PATCH", "DELETE"];
       });
     });
   });

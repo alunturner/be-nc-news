@@ -80,15 +80,12 @@ describe("APP", () => {
                 );
               });
           });
-          // should this be a 400 series status?
-          it("200: responds as above but with an empty user object if user does not exist", () => {
+          it("400: msg invalid parameter if the username does not exist", () => {
             return request(app)
               .get("/api/users/missing_user")
-              .expect(200)
+              .expect(400)
               .then(({ body }) => {
-                expect(body).to.have.key("user");
-                expect(body.user).to.be.an("object");
-                expect(Object.entries(body.user)).to.have.length(0);
+                expect(body.msg).to.equal("invalid parameter");
               });
           });
         });
@@ -107,6 +104,9 @@ describe("APP", () => {
           });
         });
       });
+    });
+    describe("/articles", () => {
+      describe("/:article_id", () => {});
     });
   });
 });

@@ -107,59 +107,75 @@ describe("APP", () => {
     });
     describe("/articles", () => {
       describe("/:article_id", () => {
-        it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
-          return request(app)
-            .get("/api/articles/1")
-            .expect(200)
-            .then(({ body }) => {
-              expect(body).to.have.key("article");
-              expect(body.article).to.be.an("object");
-              expect(body.article).to.have.all.keys(
-                "author",
-                "title",
-                "article_id",
-                "body",
-                "topic",
-                "created_at",
-                "votes",
-                "comment_count"
-              );
-            });
-        });
-        it("200: responds with the correct values on each of the keys for article_id:1", () => {
-          return request(app)
-            .get("/api/articles/1")
-            .expect(200)
-            .then(({ body }) => {
-              expect(body).to.have.key("article");
-              expect(body.article).to.be.an("object");
-              expect(body.article).to.deep.equal({
-                author: "butter_bridge",
-                title: "Living in the shadow of a great man",
-                article_id: 1,
-                body: "I find this existence challenging",
-                topic: "mitch",
-                created_at: "2018-11-15T12:21:54.171Z",
-                votes: 100,
-                comment_count: "13",
+        describe("GET", () => {
+          it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
+            return request(app)
+              .get("/api/articles/1")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("article");
+                expect(body.article).to.be.an("object");
+                expect(body.article).to.have.all.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "body",
+                  "topic",
+                  "created_at",
+                  "votes",
+                  "comment_count"
+                );
               });
-            });
+          });
+          it("200: responds with the correct values on each of the keys for article_id:1", () => {
+            return request(app)
+              .get("/api/articles/1")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("article");
+                expect(body.article).to.be.an("object");
+                expect(body.article).to.deep.equal({
+                  author: "butter_bridge",
+                  title: "Living in the shadow of a great man",
+                  article_id: 1,
+                  body: "I find this existence challenging",
+                  topic: "mitch",
+                  created_at: "2018-11-15T12:21:54.171Z",
+                  votes: 100,
+                  comment_count: "13",
+                });
+              });
+          });
+          it("400: msg invalid parameter if the parameter is not a number", () => {
+            return request(app)
+              .get("/api/articles/not_a_number")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("invalid parameter");
+              });
+          });
+          it("404: msg invalid article_id if the article_id is a number but does not exist", () => {
+            return request(app)
+              .get("/api/articles/493")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("invalid article_id");
+              });
+          });
         });
-        it("400: msg invalid parameter if the parameter is not a number", () => {
-          return request(app)
-            .get("/api/articles/not_a_number")
-            .expect(400)
-            .then(({ body }) => {
-              expect(body.msg).to.equal("invalid parameter");
+        describe("INVALID METHODS", () => {
+          it("405: msg invalid method if invalid method used", () => {
+            const invalidMethods = ["post", "put", "delete"];
+            const requests = invalidMethods.map((method) => {
+              return request(app)
+                [method]("/api/articles/1")
+                .expect(405)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("invalid method");
+                });
             });
-        });
-        it("404: msg invalid article_id if the article_id is a number but does not exist", () => {
-          return request(app)
-            .get("/api/articles/493")
-            .expect(404)
-            .then(({ body }) => {
-              expect(body.msg).to.equal("invalid article_id");
-            });
+            return Promise.all(requests);
+          });
         });
       });
     });

@@ -259,7 +259,7 @@ describe("APP", () => {
             it("201: responds with object, key of comment, value a single object with keys comment_id, article_id, created_at, author, votes, body", () => {
               return request(app)
                 .post("/api/articles/1/comments")
-                .send({ username: "new_user", body: "first" })
+                .send({ username: "butter_bridge", body: "first" })
                 .expect(201)
                 .then(({ body }) => {
                   expect(body).to.have.key("comment");
@@ -272,6 +272,22 @@ describe("APP", () => {
                     "votes",
                     "body"
                   );
+                });
+            });
+            it("201: values of the comment object reflect the input", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ username: "butter_bridge", body: "first" })
+                .expect(201)
+                .then(({ body }) => {
+                  expect(body.comment).to.deep.equal({
+                    comment_id: 19,
+                    article_id: 1,
+                    created_at: new Date(),
+                    author: "butter_bridge",
+                    votes: 0,
+                    body: "first",
+                  });
                 });
             });
           });

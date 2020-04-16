@@ -32,6 +32,8 @@ exports.updateArticleById = ({ article_id }, { inc_votes: votes }) => {
     .returning("*");
 };
 
-exports.insertCommentByArticleId = () => {
-  return knex("comments").select("*").where({ article_id: 1 });
+exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
+  return knex("comments")
+    .insert({ author: username, article_id, body })
+    .returning("*");
 };

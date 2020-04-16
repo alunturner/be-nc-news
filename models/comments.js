@@ -30,3 +30,14 @@ exports.updateCommentById = ({ comment_id }, { inc_votes: votes }) => {
     .increment({ votes })
     .returning("*");
 };
+
+exports.delCommentById = ({ comment_id }) => {
+  return knex("comments")
+    .where({ comment_id })
+    .del()
+    .returning("*")
+    .then((dbResponse) => {
+      if (dbResponse.length === 0)
+        return Promise.reject({ status: 404, msg: "value not found" });
+    });
+};

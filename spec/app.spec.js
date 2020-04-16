@@ -709,6 +709,35 @@ describe("APP", () => {
               });
           });
         });
+        describe("DELETE", () => {
+          it("204: deletes the appropriate comment", () => {
+            return request(app)
+              .delete("/api/comments/1")
+              .expect(204)
+              .then(() => {
+                return knex("comments").where({ comment_id: 1 });
+              })
+              .then((response) => {
+                expect(response).to.have.length(0);
+              });
+          });
+          it("400: msg bad request if comment_id parameter is not an integer", () => {
+            return request(app)
+              .delete("/api/comments/not_a_number")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("404: msg value not found if comment_id parameter is not in the db", () => {
+            return request(app)
+              .delete("/api/comments/9999")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("value not found");
+              });
+          });
+        });
         describe("INVALID METHODS", () => {
           it("405: msg invalid method if invalid method used", () => {
             const invalidMethods = ["post", "put", "get"];

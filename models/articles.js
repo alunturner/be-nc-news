@@ -31,9 +31,3 @@ exports.updateArticleById = ({ article_id }, { inc_votes: votes }) => {
     .increment({ votes })
     .returning("*");
 };
-
-exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
-  return knex("comments")
-    .insert({ author: username, article_id, body })
-    .returning("*");
-};

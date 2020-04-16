@@ -361,6 +361,52 @@ describe("APP", () => {
                 });
             });
           });
+          describe.only("GET", () => {
+            it("200: responds with object, key of comments, value an array of objects, each with keys comment_id, votes, created_at, author, body", () => {
+              return request(app)
+                .get("/api/articles/1/comments")
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body).to.have.key("comments");
+                  expect(body.comments).to.be.an("array");
+                  expect(body.comments).to.have.length(13);
+                  body.comments.forEach((comment) => {
+                    expect(comment).to.be.an("object");
+                    expect(comment).to.have.all.keys(
+                      "comment_id",
+                      "votes",
+                      "created_at",
+                      "author",
+                      "body"
+                    );
+                  });
+                });
+            });
+            it("200: default sort order is created_at descending", () => {
+              return request(app)
+                .get("/api/articles/1/comments")
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.descendingBy("created_at");
+                });
+            });
+            it("400: msg bad request if the parameter is not a number", () => {
+              return request(app)
+                .get("/api/articles/not_a_number/comments")
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("404: msg value not found if the article_id is a number but does not exist", () => {
+              return request(app)
+                .get("/api/articles/9999/comments")
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("value not found");
+                });
+            });
+          });
           describe("INVALID METHODS", () => {
             it("405: msg invalid method if invalid method used", () => {
               const invalidMethods = ["patch", "put", "delete"];

@@ -10,7 +10,7 @@ const {
   getCommentsByArticleId,
 } = require("../controllers/comments");
 
-articlesRouter.route("/").get(getAllArticles);
+articlesRouter.route("/").get(getAllArticles).all(invalidMethodController);
 
 articlesRouter
   .route("/:article_id")

@@ -1,6 +1,11 @@
 const knex = require("../db");
 
-exports.selectAllArticles = () => {
+exports.selectAllArticles = ({
+  sort_by = "created_at",
+  order = "desc",
+  author,
+  topic,
+}) => {
   return knex("articles")
     .leftJoin("comments", "comments.article_id", "articles.article_id")
     .select(
@@ -13,7 +18,13 @@ exports.selectAllArticles = () => {
     )
     .count("* as comment_count")
     .groupBy("articles.article_id")
-    .orderBy("articles.created_at", "desc");
+    .orderBy(`articles.${sort_by}`, order)
+    .modify((query) => {
+      if (author !== undefined) query.where({ "articles.author": author });
+    })
+    .modify((query) => {
+      if (topic !== undefined) query.where({ topic });
+    });
 };
 
 exports.selectArticleById = ({ article_id }) => {

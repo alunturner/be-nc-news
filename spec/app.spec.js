@@ -106,7 +106,7 @@ describe("APP", () => {
       });
     });
     describe("/articles", () => {
-      describe.only("GET", () => {
+      describe("GET", () => {
         it("200: responds with object, key of articles, value an array of objects, each with keys author, title, article_id, topic, created_at, votes, comment_count", () => {
           return request(app)
             .get("/api/articles")
@@ -136,6 +136,88 @@ describe("APP", () => {
             .then(({ body }) => {
               expect(body.articles).to.be.descendingBy("created_at");
             });
+        });
+        describe.only("QUERIES", () => {
+          it("200: accepts a sort_by query for any of the columns, default order is desc", () => {
+            const columns = [
+              "author",
+              "title",
+              "article_id",
+              "topic",
+              "created_at",
+              "votes",
+            ];
+            // nb have skipped comment count, struggling to get it working with knex
+            const requests = columns.map((column) => {
+              return request(app)
+                .get("/api/articles")
+                .query({ sort_by: column })
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.articles).to.be.descendingBy(column);
+                });
+            });
+            return Promise.all(requests);
+          });
+          it("200: accepts an order query for any of the columns, can sort as appropriate", () => {
+            const columns = [
+              "author",
+              "title",
+              "article_id",
+              "topic",
+              "created_at",
+              "votes",
+            ];
+            // nb have skipped comment count, struggling to get it working with knex
+            const requests = columns.map((column) => {
+              return request(app)
+                .get("/api/articles")
+                .query({ sort_by: column, order: "asc" })
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.articles).to.be.ascendingBy(column);
+                });
+            });
+            return Promise.all(requests);
+          });
+          it("200: accepts an author query to filter by author", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ author: "rogersop" })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.articles).to.have.length(3);
+                body.articles.forEach((article) => {
+                  expect(article.author).to.equal("rogersop");
+                });
+              });
+          });
+          it("200: accepts a topic query to filter by topic", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ topic: "cats" })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.articles).to.have.length(1);
+                body.articles.forEach((article) => {
+                  expect(article.topic).to.equal("cats");
+                });
+              });
+          });
+        });
+      });
+      describe("INVALID METHODS", () => {
+        it("405: msg invalid method if invalid method used", () => {
+          const invalidMethods = ["post", "put", "patch", "delete"];
+          const requests = invalidMethods.map((method) => {
+            return request(app)
+              [method]("/api/articles")
+              .expect(405)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("invalid method");
+              });
+          });
+          return Promise.all(requests);
         });
       });
       describe("/:article_id", () => {

@@ -15,12 +15,12 @@ after(() => {
 });
 
 describe("APP", () => {
-  it("404: msg invalid path if the path is not found", () => {
+  it("404: msg path not found if the path is not found", () => {
     return request(app)
       .get("/not_a_path")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).to.equal("invalid path");
+        expect(body.msg).to.equal("path not found");
       });
   });
   describe("/api", () => {
@@ -80,12 +80,12 @@ describe("APP", () => {
                 );
               });
           });
-          it("404: msg invalid username if the username does not exist", () => {
+          it("404: msg value not found if the username does not exist", () => {
             return request(app)
               .get("/api/users/missing_user")
               .expect(404)
               .then(({ body }) => {
-                expect(body.msg).to.equal("invalid username");
+                expect(body.msg).to.equal("value not found");
               });
           });
         });
@@ -107,154 +107,152 @@ describe("APP", () => {
     });
     describe("/articles", () => {
       describe("/:article_id", () => {
-        describe("/", () => {
-          describe("GET", () => {
-            it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
-              return request(app)
-                .get("/api/articles/1")
-                .expect(200)
-                .then(({ body }) => {
-                  expect(body).to.have.key("article");
-                  expect(body.article).to.be.an("object");
-                  expect(body.article).to.have.all.keys(
-                    "author",
-                    "title",
-                    "article_id",
-                    "body",
-                    "topic",
-                    "created_at",
-                    "votes",
-                    "comment_count"
-                  );
-                });
-            });
-            it("200: responds with the correct values on each of the keys for article_id:1", () => {
-              return request(app)
-                .get("/api/articles/1")
-                .expect(200)
-                .then(({ body }) => {
-                  expect(body).to.have.key("article");
-                  expect(body.article).to.be.an("object");
-                  expect(body.article).to.deep.equal({
-                    author: "butter_bridge",
-                    title: "Living in the shadow of a great man",
-                    article_id: 1,
-                    body: "I find this existence challenging",
-                    topic: "mitch",
-                    created_at: "2018-11-15T12:21:54.171Z",
-                    votes: 100,
-                    comment_count: "13",
-                  });
-                });
-            });
-            it("400: msg invalid value type if the parameter is not a number", () => {
-              return request(app)
-                .get("/api/articles/not_a_number")
-                .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal("invalid value type");
-                });
-            });
-            it("404: msg invalid article_id if the article_id is a number but does not exist", () => {
-              return request(app)
-                .get("/api/articles/493")
-                .expect(404)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal("invalid article_id");
-                });
-            });
-          });
-          describe("PATCH", () => {
-            it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ inc_votes: 1 })
-                .expect(200)
-                .then(({ body }) => {
-                  expect(body).to.have.key("article");
-                  expect(body.article).to.be.an("object");
-                  expect(body.article).to.have.all.keys(
-                    "author",
-                    "title",
-                    "article_id",
-                    "body",
-                    "topic",
-                    "created_at",
-                    "votes"
-                  );
-                });
-            });
-            it("200: uses the request body to change the relevant article votes for a positive integer", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ inc_votes: 25 })
-                .expect(200)
-                .then(({ body }) => {
-                  expect(body.article.votes).to.equal(125);
-                });
-            });
-            it("200: uses the request body to change the relevant article votes for a negative integer", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ inc_votes: -25 })
-                .expect(200)
-                .then(({ body }) => {
-                  expect(body.article.votes).to.equal(75);
-                });
-            });
-            it("400: msg: invalid object when body is empty", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ incorrect_key: 29 })
-                .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal("invalid object");
-                });
-            });
-            it("400: msg: invalid object when body does not contain inc_votes", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ incorrect_key: 29 })
-                .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal("invalid object");
-                });
-            });
-            it("400: msg: invalid value type when inc_votes key is present, but value is not a number", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ inc_votes: "not a number" })
-                .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal("invalid value type");
-                });
-            });
-            it("400: msg: invalid value type when inc_votes value is a non-integer number", () => {
-              return request(app)
-                .patch("/api/articles/1")
-                .send({ inc_votes: "3.14159" })
-                .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal("invalid value type");
-                });
-            });
-          });
-          describe("INVALID METHODS", () => {
-            it("405: msg invalid method if invalid method used", () => {
-              const invalidMethods = ["post", "put", "delete"];
-              const requests = invalidMethods.map((method) => {
-                return request(app)
-                  [method]("/api/articles/1")
-                  .expect(405)
-                  .then(({ body }) => {
-                    expect(body.msg).to.equal("invalid method");
-                  });
+        describe("GET", () => {
+          it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
+            return request(app)
+              .get("/api/articles/1")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("article");
+                expect(body.article).to.be.an("object");
+                expect(body.article).to.have.all.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "body",
+                  "topic",
+                  "created_at",
+                  "votes",
+                  "comment_count"
+                );
               });
-              return Promise.all(requests);
-            });
+          });
+          it("200: responds with the correct values on each of the keys for article_id:1", () => {
+            return request(app)
+              .get("/api/articles/1")
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("article");
+                expect(body.article).to.be.an("object");
+                expect(body.article).to.deep.equal({
+                  author: "butter_bridge",
+                  title: "Living in the shadow of a great man",
+                  article_id: 1,
+                  body: "I find this existence challenging",
+                  topic: "mitch",
+                  created_at: "2018-11-15T12:21:54.171Z",
+                  votes: 100,
+                  comment_count: "13",
+                });
+              });
+          });
+          it("400: msg bad request if the parameter is not a number", () => {
+            return request(app)
+              .get("/api/articles/not_a_number")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("404: msg value not found if the article_id is a number but does not exist", () => {
+            return request(app)
+              .get("/api/articles/493")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("value not found");
+              });
           });
         });
-        describe.only("/comments", () => {
+        describe("PATCH", () => {
+          it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ inc_votes: 1 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("article");
+                expect(body.article).to.be.an("object");
+                expect(body.article).to.have.all.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "body",
+                  "topic",
+                  "created_at",
+                  "votes"
+                );
+              });
+          });
+          it("200: uses the request body to change the relevant article votes for a positive integer", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ inc_votes: 25 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.article.votes).to.equal(125);
+              });
+          });
+          it("200: uses the request body to change the relevant article votes for a negative integer", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ inc_votes: -25 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.article.votes).to.equal(75);
+              });
+          });
+          it("400: msg: bad request when body is empty", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ incorrect_key: 29 })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg: bad request when body does not contain inc_votes", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ incorrect_key: 29 })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg: bad request when inc_votes key is present, but value is not a number", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ inc_votes: "not a number" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg: bad request when inc_votes value is a non-integer number", () => {
+            return request(app)
+              .patch("/api/articles/1")
+              .send({ inc_votes: "3.14159" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+        });
+        describe("INVALID METHODS", () => {
+          it("405: msg invalid method if invalid method used", () => {
+            const invalidMethods = ["post", "put", "delete"];
+            const requests = invalidMethods.map((method) => {
+              return request(app)
+                [method]("/api/articles/1")
+                .expect(405)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("invalid method");
+                });
+            });
+            return Promise.all(requests);
+          });
+        });
+        describe("/comments", () => {
           describe("POST", () => {
             it("201: responds with object, key of comment, value a single object with keys comment_id, article_id, created_at, author, votes, body", () => {
               return request(app)
@@ -289,6 +287,92 @@ describe("APP", () => {
                   });
                   expect(Date.parse(body.comment.created_at)).to.be.a("number");
                 });
+            });
+            it("400: msg: bad request when request body is undefined", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send()
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("400: msg: bad request when request body does not have username key", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ body: "something" })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("400: msg: bad request when request body does not have body key", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ username: "butter_bridge" })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("400: msg: bad request when request body does not have body key", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ username: "butter_bridge" })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("404: msg: value not found if the username does not exist", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ username: "invalid", body: "something witty" })
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("value not found");
+                });
+            });
+            it("400: msg: bad request if the body value is undefined", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ username: "butter_bridge", body: undefined })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("400: msg bad request if the parameter is not a number", () => {
+              return request(app)
+                .post("/api/articles/not_a_number/comments")
+                .send({ username: "butter_bridge", body: "something" })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("bad request");
+                });
+            });
+            it("404: msg value not found if the article_id is a number but does not exist", () => {
+              return request(app)
+                .post("/api/articles/9999/comments")
+                .send({ username: "butter_bridge", body: "something" })
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("value not found");
+                });
+            });
+          });
+          describe("INVALID METHODS", () => {
+            it("405: msg invalid method if invalid method used", () => {
+              const invalidMethods = ["patch", "put", "delete"];
+              const requests = invalidMethods.map((method) => {
+                return request(app)
+                  [method]("/api/articles/1/comments")
+                  .expect(405)
+                  .then(({ body }) => {
+                    expect(body.msg).to.equal("invalid method");
+                  });
+              });
+              return Promise.all(requests);
             });
           });
         });

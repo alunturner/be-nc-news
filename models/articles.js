@@ -17,14 +17,14 @@ exports.selectArticleById = ({ article_id }) => {
     .groupBy("articles.article_id")
     .then((dbResponse) => {
       if (dbResponse.length === 0)
-        return Promise.reject({ status: 404, msg: "invalid article_id" });
+        return Promise.reject({ status: 404, msg: "value not found" });
       return dbResponse;
     });
 };
 
 exports.updateArticleById = ({ article_id }, { inc_votes: votes }) => {
   if (votes === undefined) {
-    return Promise.reject({ status: 400, msg: "invalid object" });
+    return Promise.reject({ status: 400, msg: "bad request" });
   }
   return knex("articles")
     .where({ article_id })

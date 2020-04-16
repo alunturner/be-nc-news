@@ -31,3 +31,7 @@ exports.updateArticleById = ({ article_id }, { inc_votes: votes }) => {
     .increment({ votes })
     .returning("*");
 };
+
+exports.insertCommentByArticleId = () => {
+  return knex("comments").select("*").where({ article_id: 1 });
+};

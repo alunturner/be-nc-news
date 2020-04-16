@@ -254,8 +254,27 @@ describe("APP", () => {
             });
           });
         });
-        describe("/comments", () => {
-          it("200: does something", () => {});
+        describe.only("/comments", () => {
+          describe("POST", () => {
+            it("201: responds with object, key of comment, value a single object with keys comment_id, article_id, created_at, author, votes, body", () => {
+              return request(app)
+                .post("/api/articles/1/comments")
+                .send({ username: "new_user", body: "first" })
+                .expect(201)
+                .then(({ body }) => {
+                  expect(body).to.have.key("comment");
+                  expect(body.comment).to.be.an("object");
+                  expect(body.comment).to.have.all.keys(
+                    "comment_id",
+                    "article_id",
+                    "created_at",
+                    "author",
+                    "votes",
+                    "body"
+                  );
+                });
+            });
+          });
         });
       });
     });

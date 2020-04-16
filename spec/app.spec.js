@@ -106,6 +106,38 @@ describe("APP", () => {
       });
     });
     describe("/articles", () => {
+      describe.only("GET", () => {
+        it("200: responds with object, key of articles, value an array of objects, each with keys author, title, article_id, topic, created_at, votes, comment_count", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body).to.have.key("articles");
+              expect(body.articles).to.be.an("array");
+              expect(body.articles).to.have.length(12);
+              body.articles.forEach((article) => {
+                expect(article).to.be.an("object");
+                expect(article).to.have.all.keys(
+                  "author",
+                  "title",
+                  "article_id",
+                  "topic",
+                  "created_at",
+                  "votes",
+                  "comment_count"
+                );
+              });
+            });
+        });
+        it("200: default sort order is created_at desc", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("created_at");
+            });
+        });
+      });
       describe("/:article_id", () => {
         describe("GET", () => {
           it("200: responds with object, key of article, value a single object with keys author, title, article_id, body, topic, created_at, votes, comment_count", () => {
@@ -361,7 +393,7 @@ describe("APP", () => {
                 });
             });
           });
-          describe.only("GET", () => {
+          describe("GET", () => {
             it("200: responds with object, key of comments, value an array of objects, each with keys comment_id, votes, created_at, author, body", () => {
               return request(app)
                 .get("/api/articles/1/comments")

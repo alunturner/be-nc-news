@@ -1,8 +1,16 @@
 const {
+  selectAllArticles,
   selectArticleById,
   updateArticleById,
-  insertCommentByArticleId,
 } = require("../models/articles");
+
+exports.getAllArticles = (req, res, next) => {
+  selectAllArticles()
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
+};
 
 exports.getArticleById = (req, res, next) => {
   selectArticleById(req.params)

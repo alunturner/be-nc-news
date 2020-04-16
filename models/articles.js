@@ -19,9 +19,9 @@ exports.selectAllArticles = ({
       "articles.created_at",
       "articles.votes"
     )
-    .count("* as comment_count")
+    .count("comment_id as comment_count")
     .groupBy("articles.article_id")
-    .orderBy(`articles.${sort_by}`, order)
+    .orderBy(sort_by, order)
     .modify((query) => {
       if (author !== undefined) query.where({ "articles.author": author });
     })

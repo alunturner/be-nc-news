@@ -137,8 +137,8 @@ describe("APP", () => {
               expect(body.articles).to.be.descendingBy("created_at");
             });
         });
-        describe.only("QUERIES", () => {
-          it("200: accepts a sort_by query for any of the columns, default order is desc", () => {
+        describe("QUERIES", () => {
+          it("200: accepts a sort_by query for any of the standard columns, default order is desc", () => {
             const columns = [
               "author",
               "title",
@@ -147,7 +147,6 @@ describe("APP", () => {
               "created_at",
               "votes",
             ];
-            // nb have skipped comment count, struggling to get it working with knex
             const requests = columns.map((column) => {
               return request(app)
                 .get("/api/articles")
@@ -159,7 +158,7 @@ describe("APP", () => {
             });
             return Promise.all(requests);
           });
-          it("200: accepts an order query for any of the columns, can sort as appropriate", () => {
+          it("200: accepts an order query for any of the standard columns, can sort as appropriate", () => {
             const columns = [
               "author",
               "title",
@@ -168,7 +167,6 @@ describe("APP", () => {
               "created_at",
               "votes",
             ];
-            // nb have skipped comment count, struggling to get it working with knex
             const requests = columns.map((column) => {
               return request(app)
                 .get("/api/articles")
@@ -179,6 +177,18 @@ describe("APP", () => {
                 });
             });
             return Promise.all(requests);
+          });
+          it("200: accepts a sort_by query and order query for comment_count", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ sort_by: "comment_count", order: "asc" })
+              .expect(200)
+              .then(({ body }) => {
+                body.articles.forEach((article) => {
+                  article.comment_count = parseInt(article.comment_count);
+                });
+                expect(body.articles).to.be.ascendingBy("comment_count");
+              });
           });
           it("200: accepts an author query to filter by author", () => {
             return request(app)
@@ -354,7 +364,7 @@ describe("APP", () => {
           it("400: msg: bad request when body is empty", () => {
             return request(app)
               .patch("/api/articles/1")
-              .send({ incorrect_key: 29 })
+              .send({})
               .expect(400)
               .then(({ body }) => {
                 expect(body.msg).to.equal("bad request");
@@ -628,6 +638,89 @@ describe("APP", () => {
               });
               return Promise.all(requests);
             });
+          });
+        });
+      });
+    });
+    describe("/comments", () => {
+      describe("/:comment_id", () => {
+        describe("PATCH", () => {
+          it("200: response has key comment, value is an object with keys comment_id, votes, created_at, author, body, article_id", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ inc_votes: 1 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body).to.have.key("comment");
+                expect(body.comment).to.be.an("object");
+                expect(body.comment).to.have.all.keys(
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body",
+                  "article_id"
+                );
+              });
+          });
+          it("200: response has updated the votes value appropriately", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ inc_votes: 10 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.comment.votes).to.equal(26);
+              });
+          });
+          it("400: msg: bad request when body is empty", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({})
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg: bad request when body does not contain inc_votes", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ incorrect_key: 29 })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg: bad request when inc_votes key is present, but value is not a number", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ inc_votes: "not a number" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg: bad request when inc_votes value is a non-integer number", () => {
+            return request(app)
+              .patch("/api/comments/1")
+              .send({ inc_votes: "3.14159" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+        });
+        describe("INVALID METHODS", () => {
+          it("405: msg invalid method if invalid method used", () => {
+            const invalidMethods = ["post", "put", "get"];
+            const requests = invalidMethods.map((method) => {
+              return request(app)
+                [method]("/api/comments/1")
+                .expect(405)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal("invalid method");
+                });
+            });
+            return Promise.all(requests);
           });
         });
       });

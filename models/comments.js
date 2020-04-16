@@ -23,3 +23,10 @@ exports.selectCommentsByArticleId = (
       return dbResponse;
     });
 };
+
+exports.updateCommentById = ({ comment_id }, { inc_votes: votes }) => {
+  return knex("comments")
+    .where({ comment_id })
+    .increment({ votes })
+    .returning("*");
+};

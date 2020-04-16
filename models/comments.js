@@ -6,10 +6,16 @@ exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
     .returning("*");
 };
 
-exports.selectCommentsByArticleId = ({ article_id }) => {
+exports.selectCommentsByArticleId = (
+  { article_id },
+  { sort_by = "created_at", order = "desc" }
+) => {
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   return knex("comments")
     .select("comment_id", "votes", "created_at", "author", "body")
-    .orderBy("created_at", "desc")
+    .orderBy(sort_by, order)
     .where({ article_id })
     .then((dbResponse) => {
       if (dbResponse.length === 0)

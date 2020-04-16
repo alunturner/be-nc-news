@@ -406,6 +406,64 @@ describe("APP", () => {
                   expect(body.msg).to.equal("value not found");
                 });
             });
+            describe("QUERIES", () => {
+              it("200: can accept a sort_by query of any column name and sort the comments appropriately, default is descending", () => {
+                const columns = [
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body",
+                ];
+                const requests = columns.map((column) => {
+                  return request(app)
+                    .get("/api/articles/1/comments")
+                    .query({ sort_by: column })
+                    .expect(200)
+                    .then(({ body }) => {
+                      expect(body.comments).to.be.descendingBy(column);
+                    });
+                });
+                return Promise.all(requests);
+              });
+              it("200: can accept an order query of any column name and sort the comments appropriately, default is descending", () => {
+                const columns = [
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body",
+                ];
+                const requests = columns.map((column) => {
+                  return request(app)
+                    .get("/api/articles/1/comments")
+                    .query({ sort_by: column, order: "asc" })
+                    .expect(200)
+                    .then(({ body }) => {
+                      expect(body.comments).to.be.ascendingBy(column);
+                    });
+                });
+                return Promise.all(requests);
+              });
+              it("400: msg bad request if sort_by value is not a column", () => {
+                return request(app)
+                  .get("/api/articles/1/comments")
+                  .query({ sort_by: "not a column", order: "asc" })
+                  .expect(400)
+                  .then(({ body }) => {
+                    expect(body.msg).to.equal("bad request");
+                  });
+              });
+              it("400: msg bad request if order  value is not asc or desc", () => {
+                return request(app)
+                  .get("/api/articles/1/comments")
+                  .query({ sort_by: "votes", order: "going up" })
+                  .expect(400)
+                  .then(({ body }) => {
+                    expect(body.msg).to.equal("bad request");
+                  });
+              });
+            });
           });
           describe("INVALID METHODS", () => {
             it("405: msg invalid method if invalid method used", () => {

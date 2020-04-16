@@ -12,7 +12,7 @@ exports.postCommentByArticleId = (req, res, next) => {
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
-  selectCommentsByArticleId(req.params)
+  selectCommentsByArticleId(req.params, req.query)
     .then((comments) => {
       res.status(200).send({ comments });
     })

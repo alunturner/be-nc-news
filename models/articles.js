@@ -6,6 +6,9 @@ exports.selectAllArticles = ({
   author,
   topic,
 }) => {
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
   return knex("articles")
     .leftJoin("comments", "comments.article_id", "articles.article_id")
     .select(
@@ -24,6 +27,11 @@ exports.selectAllArticles = ({
     })
     .modify((query) => {
       if (topic !== undefined) query.where({ topic });
+    })
+    .then((dbResponse) => {
+      if (dbResponse.length === 0)
+        return Promise.reject({ status: 404, msg: "value not found" });
+      return dbResponse;
     });
 };
 

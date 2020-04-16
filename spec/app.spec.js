@@ -204,6 +204,42 @@ describe("APP", () => {
                 });
               });
           });
+          it("400: msg bad request if sort_by value is not a column", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ sort_by: 23 })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("400: msg bad request if order value is not asc or desc", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ order: "downwards" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("bad request");
+              });
+          });
+          it("404: msg value not found if author value is not in the db", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ author: "not there" })
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("value not found");
+              });
+          });
+          it("404: msg value not found if topic value is not in the db", () => {
+            return request(app)
+              .get("/api/articles")
+              .query({ topic: "not there" })
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal("value not found");
+              });
+          });
         });
       });
       describe("INVALID METHODS", () => {

@@ -280,14 +280,14 @@ describe("APP", () => {
                 .send({ username: "butter_bridge", body: "first" })
                 .expect(201)
                 .then(({ body }) => {
-                  expect(body.comment).to.deep.equal({
+                  expect(body.comment).to.include({
                     comment_id: 19,
                     article_id: 1,
-                    created_at: new Date(),
                     author: "butter_bridge",
                     votes: 0,
                     body: "first",
                   });
+                  expect(Date.parse(body.comment.created_at)).to.be.a("number");
                 });
             });
           });

@@ -24,7 +24,7 @@ describe("APP", () => {
       });
   });
   describe("/api", () => {
-    describe.only("GET", () => {
+    describe("GET", () => {
       it("200: responds with an object, key of endpoints, value an array of endpoint objects each with keys path and methods", () => {
         return request(app)
           .get("/api")
@@ -52,6 +52,20 @@ describe("APP", () => {
               });
             });
           });
+      });
+    });
+    describe("INVALID METHODS", () => {
+      it("405: msg invalid method if invalid method used", () => {
+        const invalidMethods = ["post", "put", "patch", "delete"];
+        const requests = invalidMethods.map((method) => {
+          return request(app)
+            [method]("/api")
+            .expect(405)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("invalid method");
+            });
+        });
+        return Promise.all(requests);
       });
     });
     describe("/topics", () => {

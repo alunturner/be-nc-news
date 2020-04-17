@@ -1,17 +1,6 @@
 You are now connected to database "nc_news_test" as user "cex".
- article_id |    author     | topic | comment_count 
-------------+---------------+-------+---------------
-          1 | butter_bridge | mitch |            13
-          9 | butter_bridge | mitch |             2
-          5 | rogersop      | cats  |             2
-          6 | icellusedkars | mitch |             1
-         12 | butter_bridge | mitch |             1
-          3 | icellusedkars | mitch |             1
-          2 | icellusedkars | mitch |             1
-          8 | icellusedkars | mitch |             1
-          4 | rogersop      | mitch |             1
-         11 | icellusedkars | mitch |             1
-          7 | icellusedkars | mitch |             1
-         10 | rogersop      | mitch |             1
-(12 rows)
+ total_count 
+-------------
+          26
+(1 row)
 

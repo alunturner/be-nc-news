@@ -2,12 +2,16 @@ const {
   selectAllArticles,
   selectArticleById,
   updateArticleById,
+  selectTotalCount,
 } = require("../models/articles");
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles(req.query)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  const promises = [selectAllArticles(req.query), selectTotalCount()];
+
+  Promise.all(promises)
+    .then((returnedPromises) => {
+      const [articles, [{ total_count }]] = returnedPromises;
+      res.status(200).send({ articles, total_count });
     })
     .catch(next);
 };

@@ -116,6 +116,8 @@ In your `package.json`, add the following keys to the scripts:
 
 Each of these will establish an environment variable called `DB_URL`, and set it to whatever heroku provides as your DB URL. It is essential that you do this as the DB URL may change! This deals with a lack of predictability on heroku's end.
 
+### GOT TO HERE
+
 Make sure to **run the seed prod script** from your `package.json`:
 
 ```bash
@@ -127,13 +129,13 @@ npm run seed:prod
 Change your connection file to look something like this:
 
 ```js
-const ENV = process.env.NODE_ENV || 'development';
-const knex = require('knex');
+const ENV = process.env.NODE_ENV || "development";
+const knex = require("knex");
 
 const dbConfig =
-  ENV === 'production'
-    ? { client: 'pg', connection: process.env.DATABASE_URL }
-    : require('../knexfile');
+  ENV === "production"
+    ? { client: "pg", connection: process.env.DATABASE_URL }
+    : require("../knexfile");
 
 module.exports = knex(dbConfig);
 ```

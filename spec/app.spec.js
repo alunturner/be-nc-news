@@ -24,6 +24,36 @@ describe("APP", () => {
       });
   });
   describe("/api", () => {
+    describe.only("GET", () => {
+      it("200: responds with an object, key of endpoints, value an array of endpoint objects each with keys path and methods", () => {
+        return request(app)
+          .get("/api")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.have.key("endpoints");
+            expect(body.endpoints).to.be.an("array");
+            body.endpoints.forEach((endpoint) => {
+              expect(endpoint).to.have.all.keys("path", "methods");
+            });
+          });
+      });
+      it("200: for each endpoint, path value is a string and method value is an array, each entry is a string and is one of GET, POST, PUT, PATCH, DELETE", () => {
+        return request(app)
+          .get("/api")
+          .expect(200)
+          .then(({ body }) => {
+            const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+            body.endpoints.forEach((endpoint) => {
+              expect(endpoint.path).to.be.a("string");
+              expect(endpoint.methods).to.be.an("array");
+              endpoint.methods.forEach((method) => {
+                expect(method).to.be.a("string");
+                expect(validMethods).to.contain(method);
+              });
+            });
+          });
+      });
+    });
     describe("/topics", () => {
       describe("GET", () => {
         it("200: responds with object, key of topics, value an array of topics, each with keys slug and description", () => {

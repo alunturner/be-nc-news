@@ -39,16 +39,16 @@
 
 ## Controllers
 
-- Name functions and variables well
-- Add catch blocks to all model invocations (and don't mix use of`.catch(next);` and `.catch(err => next(err))`)
+- [x] Name functions and variables well
+- [x] Add catch blocks to all model invocations (and don't mix use of`.catch(next);` and `.catch(err => next(err))`)
 
 ## Models
 
-- Consistently use either single object argument _**or**_ multiple arguments in model functions
-- No unnecessary use of `.modify()` (i.e. only for author and topic queries)
-- Use `leftJoin` for comment counts
+- [X]Consistently use either single object argument _**or**_ multiple arguments in model functions
+- [X]No unnecessary use of `.modify()` (i.e. only for author and topic queries)
+- [X]Use `leftJoin` for comment counts
 
 ## Errors
 
-- [ ] Use error handling middleware functions in app and extracted to separate directory/file
-- [ ] Consistently use `Promise.reject` in either models _**OR**_ controllers
+- [] Use error handling middleware functions in app and extracted to separate directory/file
+- [] Consistently use `Promise.reject` in either models _**OR**_ controllers

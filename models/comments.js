@@ -15,8 +15,8 @@ exports.selectCommentsByArticleId = (
   }
   return knex("comments")
     .select("comment_id", "votes", "created_at", "author", "body")
-    .orderBy(sort_by, order)
     .where({ article_id })
+    .orderBy(sort_by, order)
     .then((dbResponse) => {
       if (dbResponse.length === 0)
         return Promise.reject({ status: 404, msg: "value not found" });

@@ -33,9 +33,9 @@
 
 ## Routing
 
-- [ ] Split into api, topics, users, comments and articles routers
-- [ ] Use `.route` for endpoints that share the same path
-- [ ] Use `.all` for 405 errors
+- [x] Split into api, topics, users, comments and articles routers
+- [x] Use `.route` for endpoints that share the same path
+- [x] Use `.all` for 405 errors
 
 ## Controllers
 

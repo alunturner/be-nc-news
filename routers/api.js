@@ -1,6 +1,8 @@
 const apiRouter = require("express").Router();
+
 const { getAllPaths } = require("../controllers/paths");
 const { invalidMethodController } = require("../errors");
+
 const articlesRouter = require("./articles");
 const commentsRouter = require("./comments");
 const topicsRouter = require("./topics");

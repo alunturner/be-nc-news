@@ -1,4 +1,5 @@
 const topicsRouter = require("express").Router();
+
 const { getAllTopics } = require("../controllers/topics");
 const { invalidMethodController } = require("../errors");
 

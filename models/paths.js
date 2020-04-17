@@ -1,13 +1,43 @@
 exports.generateAllPaths = () => {
   return {
     endpoints: [
-      { path: "/api", methods: ["GET"] },
-      { path: "/api/topics", methods: ["GET"] },
-      { path: "/api/users/:username", methods: ["GET"] },
-      { path: "/api/articles", methods: ["GET"] },
-      { path: "/api/articles/:article_id", methods: ["GET", "PATCH"] },
-      { path: "/api/articles/:article_id/comments", methods: ["GET", "POST"] },
-      { path: "/api/comments/:comment_id", methods: ["PATCH", "DELETE"] },
+      {
+        path: "/api",
+        method: { GET: { description: "", query: "", response: "" } },
+      },
+      {
+        path: "/api/topics",
+        method: { GET: { description: "", query: "", response: "" } },
+      },
+      {
+        path: "/api/users/:username",
+        method: { GET: { description: "", query: "", response: "" } },
+      },
+      {
+        path: "/api/articles",
+        method: { GET: { description: "", query: "", response: "" } },
+      },
+      {
+        path: "/api/articles/:article_id",
+        method: {
+          GET: { description: "", query: "", response: "" },
+          PATCH: { description: "", query: "", response: "" },
+        },
+      },
+      {
+        path: "/api/articles/:article_id/comments",
+        method: {
+          GET: { description: "", query: "", response: "" },
+          POST: { description: "", query: "", response: "" },
+        },
+      },
+      {
+        path: "/api/comments/:comment_id",
+        method: {
+          PATCH: { description: "", query: "", response: "" },
+          DELETE: { description: "", query: "", response: "" },
+        },
+      },
     ],
   };
 };

@@ -10,7 +10,7 @@
 
 ## General
 
-- [ ] Remove any unnecessary `console.logs` and comments
+- [x] Remove any unnecessary `console.logs` and comments
 - [ ] Remove all unnecessary files (e.g. old `README.md`,`hosting.md`)
 
 ## Migrations
@@ -50,5 +50,5 @@
 
 ## Errors
 
-- [] Use error handling middleware functions in app and extracted to separate directory/file
-- [] Consistently use `Promise.reject` in either models _**OR**_ controllers
+- [x] Use error handling middleware functions in app and extracted to separate directory/file
+- [x] Consistently use `Promise.reject` in either models _**OR**_ controllers

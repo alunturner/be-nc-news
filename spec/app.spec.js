@@ -26,45 +26,37 @@ describe("APP", () => {
   describe("/api", () => {
     describe("GET", () => {
       const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
-      it("200: responds with an object, key of endpoints, value an array of endpoint objects each with keys path, method", () => {
+      it("200: responds with an object, keys are the paths, value of each is an object", () => {
         return request(app)
           .get("/api")
           .expect(200)
-          .then(({ body }) => {
-            expect(body).to.have.key("endpoints");
-            expect(body.endpoints).to.be.an("array");
-            body.endpoints.forEach((endpoint) => {
-              expect(endpoint).to.have.all.keys("path", "method");
+          .then(({ text }) => {
+            const body = JSON.parse(text);
+            expect(body).to.be.an("object");
+            Object.keys(body).forEach((key) => {
+              expect(key).to.contain("/api");
+              expect(body[key]).to.be.an("object");
             });
           });
       });
-      it("200: for each endpoint, path value is a string and method value is an object, each key is one of the validMethods", () => {
+      it("200: for each path object, the keys are methods as in validMethods and their values are objects with keys description, query, response", () => {
         return request(app)
           .get("/api")
           .expect(200)
-          .then(({ body }) => {
-            body.endpoints.forEach((endpoint) => {
-              expect(endpoint.path).to.be.a("string");
-              expect(endpoint.method).to.be.an("object");
-              Object.keys(endpoint.method).forEach((methodKey) => {
-                expect(validMethods).to.include(methodKey);
-              });
-            });
-          });
-      });
-      it("200: for each endpoint method the method object has the keys description, query, response", () => {
-        return request(app)
-          .get("/api")
-          .expect(200)
-          .then(({ body }) => {
-            body.endpoints.forEach((endpoint) => {
-              Object.keys(endpoint.method).forEach((methodKey) => {
-                expect(endpoint.method[methodKey]).to.be.an("object");
-                expect(endpoint.method[methodKey]).to.have.all.keys(
+          .then(({ text }) => {
+            const body = JSON.parse(text);
+            Object.keys(body).forEach((path) => {
+              Object.keys(body[path]).forEach((method) => {
+                expect(validMethods).to.contain(method);
+                expect(body[path][method]).to.be.an("object");
+                expect(body[path][method]).to.have.all.keys(
                   "description",
                   "query",
                   "response"
                 );
+                expect(body[path][method].description).to.be.a("string");
+                expect(body[path][method].query).to.be.an("object");
+                expect(body[path][method].response).to.be.an("object");
               });
             });
           });

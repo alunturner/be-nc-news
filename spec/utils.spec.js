@@ -100,7 +100,7 @@ describe("makeRefObj", () => {
     const actual = makeRefObj(input);
     expect(actual).to.deep.equal({ A: 1, B: 3, FZ: 2 });
   });
-  it("does not mutate input", () => {
+  it("does not mutate the input", () => {
     const input = [
       { article_id: 1, title: "A" },
       { article_id: 3, title: "B" },

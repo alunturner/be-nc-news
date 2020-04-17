@@ -11,25 +11,25 @@
 ## General
 
 - [ ] Remove any unnecessary `console.logs` and comments
-- [ ] Remove all unnecessary files (e.g. old `README.md`, `error-handling.md`, `hosting.md`, `./db/utils/README.md` etc.)
+- [ ] Remove all unnecessary files (e.g. old `README.md`,`hosting.md`)
 
 ## Migrations
 
-- [ ] Use `notNullable` on required fields
-- [ ] Default `created_at` in articles and comments tables to the current date:`.defaultTo(knex.fn.now());`
-- [ ] Delete all comments when the article they are related to is deleted: Add `.onDelete("CASCADE");` to `article_id` column in `comments` table.
+- [x] Use `notNullable` on required fields
+- [x] Default `created_at` in articles and comments tables to the current date:`.defaultTo(knex.fn.now());`
+- [x] Delete all comments when the article they are related to is deleted: Add `.onDelete("CASCADE");` to `article_id` column in `comments` table.
 
 ## Seeding
 
-- [ ] Make sure util functions do not mutate data
-- [ ] Make util functions easy to follow with well named functions and variables
-- [ ] Test util functions
-- [ ] Migrate rollback and migrate latest in seed function
+- [x] Make sure util functions do not mutate data
+- [x] Make util functions easy to follow with well named functions and variables
+- [x] Test util functions
+- [x] Migrate rollback and migrate latest in seed function
 
 ## Tests
 
-- [ ] Cover all endpoints and errors
-- [ ] Ensure all tests are passing
+- [x] Cover all endpoints and errors
+- [x] Ensure all tests are passing
 
 ## Routing
 

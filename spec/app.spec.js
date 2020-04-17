@@ -24,7 +24,7 @@ describe("APP", () => {
       });
   });
   describe("/api", () => {
-    describe.only("GET", () => {
+    describe("GET", () => {
       const validMethods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
       it("200: responds with an object, key of endpoints, value an array of endpoint objects each with keys path, method", () => {
         return request(app)

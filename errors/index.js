@@ -6,7 +6,6 @@ exports.invalidMethodController = (req, res, next) => {
   res.status(405).send({ msg: "invalid method" });
 };
 
-// error handling middleware
 exports.handle400s = (err, req, res, next) => {
   const codes = {
     "22P02": { status: 400, msg: "bad request" },
@@ -19,11 +18,12 @@ exports.handle400s = (err, req, res, next) => {
     res.status(status).send({ msg });
   } else next(err);
 };
+
 exports.handleCustoms = (err, req, res, next) => {
   if (err.status) res.status(err.status).send({ msg: err.msg });
   else next(err);
 };
+
 exports.handle500s = (err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "internal server error" });
 };

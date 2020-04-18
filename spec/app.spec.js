@@ -628,7 +628,7 @@ describe("APP", () => {
                 .then(({ body }) => {
                   expect(body).to.have.key("comments");
                   expect(body.comments).to.be.an("array");
-                  expect(body.comments).to.have.length(13);
+                  expect(body.comments).to.have.length(10);
                   body.comments.forEach((comment) => {
                     expect(comment).to.be.an("object");
                     expect(comment).to.have.all.keys(
@@ -704,6 +704,30 @@ describe("APP", () => {
                 });
                 return Promise.all(requests);
               });
+              it("200: can accept a limit query, default is 10", () => {
+                return request(app)
+                  .get("/api/articles/1/comments")
+                  .query({ limit: 5 })
+                  .expect(200)
+                  .then(({ body }) => {
+                    expect(body.comments).to.have.length(5);
+                  });
+              });
+              it("200: can accept a p query, default is 1", () => {
+                return request(app)
+                  .get("/api/articles/1/comments")
+                  .query({
+                    limit: 3,
+                    p: 3,
+                    sort_by: "comment_id",
+                    order: "asc",
+                  })
+                  .expect(200)
+                  .then(({ body }) => {
+                    expect(body.comments).to.have.length(3);
+                    expect(body.comments[0].comment_id).to.equal(8);
+                  });
+              });
               it("400: msg bad request if sort_by value is not a column", () => {
                 return request(app)
                   .get("/api/articles/1/comments")
@@ -717,6 +741,26 @@ describe("APP", () => {
                 return request(app)
                   .get("/api/articles/1/comments")
                   .query({ sort_by: "votes", order: "going up" })
+                  .expect(400)
+                  .then(({ body }) => {
+                    expect(body.msg).to.equal("bad request");
+                  });
+              });
+              it("400: msg bad request if limit value is not an integer", () => {
+                return request(app)
+                  .get("/api/articles/1/comments")
+                  .query({ limit: 0.1 })
+                  .expect(400)
+                  .then(({ body }) => {
+                    expect(body.msg).to.equal("bad request");
+                  });
+              });
+              it("400: msg bad request if p value is not an integer", () => {
+                return request(app)
+                  .get("/api/articles/1/comments")
+                  .query({
+                    p: 2.1,
+                  })
                   .expect(400)
                   .then(({ body }) => {
                     expect(body.msg).to.equal("bad request");

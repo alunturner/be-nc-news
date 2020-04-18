@@ -8,15 +8,20 @@ exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
 
 exports.selectCommentsByArticleId = (
   { article_id },
-  { sort_by = "created_at", order = "desc" }
+  { sort_by = "created_at", order = "desc", limit = 10, p = 1 }
 ) => {
   if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  if (/\D/.test(limit) || /\D/.test(p)) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
   return knex("comments")
     .select("comment_id", "votes", "created_at", "author", "body")
     .where({ article_id })
     .orderBy(sort_by, order)
+    .limit(limit)
+    .offset((p - 1) * limit)
     .then((dbResponse) => {
       if (dbResponse.length === 0)
         return Promise.reject({ status: 404, msg: "value not found" });
